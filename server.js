@@ -44,15 +44,21 @@ const requestListener = async(req, res) => {
         successHandle(res,[]);
     }
     else if(req.url.startsWith("/posts/") && req.method == "DELETE"){
-        const id = req.url.split("/").pop();
-        const deletePost = await Post.findByIdAndDelete(id);
-        if(deletePost !== null){
-            const posts = await Post.find();
-            successHandle(res,posts);
+        try{
+            const id = req.url.split("/").pop();
+            const deletePost = await Post.findByIdAndDelete(id);
+            if(deletePost !== null){
+                const posts = await Post.find();
+                successHandle(res,posts);
+            }
+            else{
+                errorHandle(res,400,"查無此id");
+            }
         }
-        else{
-            errorHandle(res,400,"查無此id");
+        catch(error){
+            errorHandle(res,400,"資料填寫不正確");
         }
+        
     }
     else if(req.url.startsWith("/posts/") && req.method == "PATCH"){
         req.on("end",async()=>{
@@ -75,11 +81,11 @@ const requestListener = async(req, res) => {
                     
                 }
                 else{
-                    errorHandle(res,400,"欄位不正確");
+                    errorHandle(res,400,"資料填寫不正確");
                 }
             }
             catch(error){
-                errorHandle(res,400,"欄位不正確");
+                errorHandle(res,400,"資料填寫不正確");
             }
         });
     }
